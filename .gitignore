@@ -5,3 +5,5 @@
 8cc
 stage?
 utiltest
+cmake-build-debug/*
+.idea

@@ -938,7 +938,7 @@ static void init_keywords() {
 
 static void init_predefined_macros() {
     vec_push(std_include_path, "F:/Program Files/mingw-w64/x86_64-7.1.0-posix-seh-rt_v5-rev2/mingw64/x86_64-w64-mingw32/include");
-    vec_push(std_include_path, "C:/Users/Cthulhu/Desktop/8cc-master");
+    vec_push(std_include_path, "C:/Users/Cthulhu/Desktop/w8cc");
 
     define_special_macro("__DATE__", handle_date_macro);
     define_special_macro("__TIME__", handle_time_macro);

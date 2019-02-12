@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(8cc-win)
+project(w8cc)
 
-set(SRC buffer.c cpp.c debug.c dict.c encoding.c error.c file.c
-        gen.c lex.c main.c map.c parse.c path.c set.c vector.c)
+set(SRC src/buffer.c src/cpp.c src/debug.c src/dict.c src/encoding.c src/error.c src/file.c
+        src/gen.c src/lex.c src/main.c src/map.c src/parse.c src/path.c src/set.c src/vector.c)
 
-add_executable(8cc-win ${SRC})
+add_executable(w8cc ${SRC})
