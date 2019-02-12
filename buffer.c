@@ -11,6 +11,7 @@
 Buffer *make_buffer() {
     Buffer *r = malloc(sizeof(Buffer));
     r->body = malloc(INIT_SIZE);
+    memset(r->body,0,INIT_SIZE);
     r->nalloc = INIT_SIZE;
     r->len = 0;
     return r;
@@ -19,6 +20,7 @@ Buffer *make_buffer() {
 static void realloc_body(Buffer *b) {
     int newsize = b->nalloc * 2;
     char *body = malloc(newsize);
+    memset(body,0,newsize);
     memcpy(body, b->body, b->len);
     b->body = body;
     b->nalloc = newsize;

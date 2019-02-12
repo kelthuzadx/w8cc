@@ -845,7 +845,7 @@ static void maybe_print_source_loc(Node *node) {
         map_put(source_files, file, (void *)fileno);
         emit(".file %ld \"%s\"", fileno, quote_cstring(file));
     }
-    char *loc = format(".loc %ld %d 0", fileno, node->sourceLoc->line);
+    char *loc = format(".loc %ld %d", fileno, node->sourceLoc->line);
     if (strcmp(loc, last_loc)) {
         emit("%s", loc);
         maybe_print_source_line(file, node->sourceLoc->line);

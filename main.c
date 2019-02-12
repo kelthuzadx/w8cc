@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include "8cc.h"
 
@@ -68,7 +67,7 @@ static FILE *open_asmfile() {
         asmfile = outfile ? outfile : replace_suffix(base(infile), 's');
     } else {
         asmfile = format("/tmp/8ccXXXXXX.s");
-        if (!mkstemps(asmfile, 2))
+        if (!mktemp(asmfile))
             perror("mkstemps");
         vec_push(tmpfiles, asmfile);
     }
@@ -190,19 +189,19 @@ int main(int argc, char **argv) {
 
     close_output_file();
 
-    if (!dumpast && !dumpasm) {
-        if (!outfile)
-            outfile = replace_suffix(base(infile), 'o');
-        pid_t pid = fork();
-        if (pid < 0) perror("fork");
-        if (pid == 0) {
-            execlp("as", "as", "-o", outfile, "-c", asmfile, (char *)NULL);
-            perror("execl failed");
-        }
-        int status;
-        waitpid(pid, &status, 0);
-        if (status < 0)
-            error("as failed");
-    }
+//    if (!dumpast && !dumpasm) {
+//        if (!outfile)
+//            outfile = replace_suffix(base(infile), 'o');
+//        pid_t pid = fork();
+//        if (pid < 0) perror("fork");
+//        if (pid == 0) {
+//            execlp("as", "as", "-o", outfile, "-c", asmfile, (char *)NULL);
+//            perror("execl failed");
+//        }
+//        int status;
+//        waitpid(pid, &status, 0);
+//        if (status < 0)
+//            error("as failed");
+//    }
     return 0;
 }

@@ -8,10 +8,12 @@
 
 // Returns the shortest path for the given full path to a file.
 static char *clean(char *p) {
-    assert(*p == '/');
     char buf[PATH_MAX];
     char *q = buf;
+    *q++ = p[0];
+    *q++ = ':';
     *q++ = '/';
+    p=p+2;
     for (;;) {
         if (*p == '/') {
             p++;
@@ -42,7 +44,7 @@ static char *clean(char *p) {
 // Returns the shortest absolute path for the given path.
 char *fullpath(char *path) {
     static char cwd[PATH_MAX];
-    if (path[0] == '/')
+    if (path[1] == ':')
         return clean(path);
     if (*cwd == '\0' && !getcwd(cwd, PATH_MAX))
         error("getcwd failed: %s", strerror(errno));

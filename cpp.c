@@ -676,7 +676,9 @@ static bool guarded(char *path) {
 }
 
 static bool try_include(char *dir, char *filename, bool isimport) {
-    char *path = fullpath(format("%s/%s", dir, filename));
+    char temp[10240];
+    sprintf(temp,"%s/%s",dir,filename);
+    char *path = fullpath(temp);
     if (map_get(once, path))
         return true;
     if (guarded(path))
@@ -935,12 +937,8 @@ static void init_keywords() {
 }
 
 static void init_predefined_macros() {
-    vec_push(std_include_path, BUILD_DIR "/include");
-    vec_push(std_include_path, "/usr/local/lib/8cc/include");
-    vec_push(std_include_path, "/usr/local/include");
-    vec_push(std_include_path, "/usr/include");
-    vec_push(std_include_path, "/usr/include/linux");
-    vec_push(std_include_path, "/usr/include/x86_64-linux-gnu");
+    vec_push(std_include_path, "F:/Program Files/mingw-w64/x86_64-7.1.0-posix-seh-rt_v5-rev2/mingw64/x86_64-w64-mingw32/include");
+    vec_push(std_include_path, "C:/Users/Cthulhu/Desktop/8cc-master");
 
     define_special_macro("__DATE__", handle_date_macro);
     define_special_macro("__TIME__", handle_time_macro);
@@ -953,12 +951,12 @@ static void init_predefined_macros() {
     define_special_macro("__INCLUDE_LEVEL__", handle_include_level_macro);
     define_special_macro("__TIMESTAMP__", handle_timestamp_macro);
 
-    read_from_string("#include <" BUILD_DIR "/include/8cc.h>");
+    read_from_string("#include <include/8cc.h>");
 }
 
 void init_now() {
     time_t timet = time(NULL);
-    localtime_r(&timet, &now);
+    localtime(&timet);
 }
 
 void cpp_init() {
@@ -985,7 +983,7 @@ static Token *maybe_convert_keyword(Token *tok) {
 }
 
 // Reads from a string as if the string is a content of input file.
-// Convenient for evaluating small string snippet contaiing preprocessor macros.
+// Convenient for evaluating small string snippet containing preprocessor macros.
 void read_from_string(char *buf) {
     stream_stash(make_file_string(buf));
     Vector *toplevels = read_toplevels();
