@@ -11,7 +11,7 @@
 bool dumpstack = false;
 bool dumpsource = true;
 
-static char *REGS[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+static char *REGS[] = {"rcx", "rdx", "r8", "r9"};
 static char *SREGS[] = {"dil", "sil", "dl", "cl", "r8b", "r9b"};
 static char *MREGS[] = {"edi", "esi", "edx", "ecx", "r8d", "r9d"};
 static int TAB = 8;
@@ -819,40 +819,6 @@ static char **read_source_file(char *file) {
     return split(buf);
 }
 
-static void maybe_print_source_line(char *file, int line) {
-    if (!dumpsource)
-        return;
-    char **lines = map_get(source_lines, file);
-    if (!lines) {
-        lines = read_source_file(file);
-        if (!lines)
-            return;
-        map_put(source_lines, file, lines);
-    }
-    int len = 0;
-    for (char **p = lines; *p; p++)
-        len++;
-    emit_nostack("# %s", lines[line - 1]);
-}
-
-static void maybe_print_source_loc(Node *node) {
-    if (!node->sourceLoc)
-        return;
-    char *file = node->sourceLoc->file;
-    long fileno = (long)map_get(source_files, file);
-    if (!fileno) {
-        fileno = map_len(source_files) + 1;
-        map_put(source_files, file, (void *)fileno);
-        emit(".file %ld \"%s\"", fileno, quote_cstring(file));
-    }
-    char *loc = format(".loc %ld %d", fileno, node->sourceLoc->line);
-    if (strcmp(loc, last_loc)) {
-        emit("%s", loc);
-        maybe_print_source_line(file, node->sourceLoc->line);
-    }
-    last_loc = loc;
-}
-
 static void emit_lvar(Node *node) {
     SAVE;
     ensure_lvar_init(node);
@@ -928,7 +894,7 @@ static bool maybe_emit_builtin(Node *node) {
 static void classify_args(Vector *ints, Vector *floats, Vector *rest, Vector *args) {
     SAVE;
     int ireg = 0, xreg = 0;
-    int imax = 6, xmax = 8;
+    int imax = 4, xmax = 4;
     for (int i = 0; i < vec_len(args); i++) {
         Node *v = vec_get(args, i);
         if (v->ty->kind == KIND_STRUCT)
@@ -942,8 +908,8 @@ static void classify_args(Vector *ints, Vector *floats, Vector *rest, Vector *ar
 
 static void save_arg_regs(int nints, int nfloats) {
     SAVE;
-    assert(nints <= 6);
-    assert(nfloats <= 8);
+    assert(nints <= 4);
+    assert(nfloats <= 4);
     for (int i = 0; i < nints; i++)
         push(REGS[i]);
     for (int i = 1; i < nfloats; i++)
@@ -1024,7 +990,6 @@ static void emit_func_call(Node *node) {
     emit_args(floats);
     pop_float_args(vec_len(floats));
     pop_int_args(vec_len(ints));
-
     if (isptr) pop("r11");
     if (ftype->hasva)
         emit("mov $%u, #eax", vec_len(floats));
@@ -1205,7 +1170,6 @@ static void emit_computed_goto(Node *node) {
 
 static void emit_expr(Node *node) {
     SAVE;
-    maybe_print_source_loc(node);
     switch (node->kind) {
     case AST_LITERAL: emit_literal(node); return;
     case AST_LVAR:    emit_lvar(node); return;

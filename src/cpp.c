@@ -967,7 +967,7 @@ void cpp_init() {
 }
 
 /*
- * Public intefaces
+ * Public interfaces
  */
 
 static Token *maybe_convert_keyword(Token *tok) {
